@@ -2,35 +2,59 @@ class BankAccount:
     total_accounts = 0  # Class variable to track total accounts
 
     def __init__(self, account_holder, initial_balance=0):
-        """Initialize a new bank account."""
+        self.account_holder = account_holder
+        self.balance = initial_balance
+        self.transaction_history = []
+        BankAccount.total_accounts += 1
         pass
 
     def deposit(self, amount):
-        """Instance method to deposit money into the account."""
+        if BankAccount.validate_amount(amount):
+            self.balance += amount
+            self.transaction_history.append(f"Deposited: {amount}")
+        else:
+            print("Invalid deposit amount.")
         pass
 
     def withdraw(self, amount):
-        """Instance method to withdraw money, applying a transaction fee."""
+        transaction_fee = 2
+        if BankAccount.validate_amount(amount) and self.balance >= (amount + transaction_fee):
+            self.balance -= (amount + transaction_fee)
+            self.transaction_history.append(f"Withdrew: {amount} (Fee: {transaction_fee})")
+        else:
+            print("Invalid withdrawal amount or insufficient funds.")
         pass
 
     def transfer(self, recipient, amount):
-        """Instance method to transfer money between two accounts."""
-        pass
+        if isinstance(recipient, BankAccount) and BankAccount.validate_amount(amount):
+            transaction_fee = 2
+            if self.balance >= (amount + transaction_fee):
+                self.balance -= (amount + transaction_fee)
+                recipient.balance += amount
+                self.transaction_history.append(f"Transferred: {amount} to {recipient.account_holder} (Fee: {transaction_fee})")
+                recipient.transaction_history.append(f"Received: {amount} from {self.account_holder}")
+            else:
+                print("Insufficient funds for transfer.")
+        else:
+            print("Invalid recipient account or transfer amount.")        pass
 
     def check_balance(self):
-        """Instance method to check the current balance."""
+        return self.balance
         pass
 
     def get_transaction_history(self):
-        """Instance method to return a list of all transactions."""
+        return self.transaction_history
         pass
 
     @classmethod
     def total_bank_accounts(cls):
-        """Class method to return the total number of accounts."""
+        return cls.total_accounts
         pass
 
     @staticmethod
     def validate_amount(amount):
-        """Static method to check if an amount is valid (positive, within limits)."""
+        if isinstance(amount, (int, float)) and amount > 0:
+            return True
+        return False
+
         pass
